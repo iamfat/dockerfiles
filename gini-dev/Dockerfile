@@ -18,7 +18,7 @@ RUN apt-get install -y openssh-server && \
 ADD supervisor.ssh.conf /etc/supervisor/conf.d/ssh.conf
 
 # Install PHP 5.5
-RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-dev libyaml-dev && \
+RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-dev libyaml-dev php5-xdebug && \
 	printf "\n" | pecl install yaml-beta && \
 	echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && \
 	php5enmod yaml && \
@@ -32,9 +32,9 @@ RUN apt-get install -y nginx-light
 ADD supervisor.nginx.conf /etc/supervisor/conf.d/nginx.conf
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php && \
-    mkdir -p /usr/local/bin && mv composer.phar /usr/local/bin/composer && \
-    echo 'PATH="/home/genee/.composer/vendor/bin:$PATH"' >> /home/genee/.profile
+RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/installer');" | php && \
+    mv composer.phar /usr/local/bin/composer && \
+    echo -e '\nPATH="/home/genee/.composer/vendor/bin:$PATH"' >> /home/genee/.profile
 
 # Install Gini
 RUN COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'iamfat/gini:dev-master' --prefer-dist
@@ -44,7 +44,7 @@ RUN pear channel-discover pear.phpunit.de && \
     pecl install phpunit/test_helpers && \
     echo "extension=test_helpers.so" > /etc/php5/mods-available/test_helpers.ini && \
     php5enmod test_helpers && \
-    COMPOSER_PROCESS_TIMEOUT=40000 sudo -u genee composer global require 'phpunit:*'
+    COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'phpunit/phpunit:*' --prefer-dist
 
 VOLUME ["/data", "/etc/nginx/sites-enabled"]
 
