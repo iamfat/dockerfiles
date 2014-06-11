@@ -36,4 +36,6 @@ VOLUME ["/data", "/var/lib/mysql"]
 
 EXPOSE 3306
 EXPOSE 22
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+
+ENTRYPOINT ["/usr/bin/supervisord"]
+CMD ["-c", "/etc/supervisor/supervisord.conf"]

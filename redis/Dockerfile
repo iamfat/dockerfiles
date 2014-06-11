@@ -30,4 +30,6 @@ VOLUME ["/data"]
 
 EXPOSE 6379
 EXPOSE 22
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+
+ENTRYPOINT ["/usr/bin/supervisord"]
+CMD ["-c", "/etc/supervisor/supervisord.conf"]

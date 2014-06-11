@@ -51,4 +51,6 @@ VOLUME ["/data", "/etc/nginx/sites-enabled"]
 EXPOSE 9000
 EXPOSE 80
 EXPOSE 22
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+
+ENTRYPOINT ["/usr/bin/supervisord"]
+CMD ["-c", "/etc/supervisor/supervisord.conf"]
