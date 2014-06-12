@@ -22,13 +22,14 @@ RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-r
 	printf "\n" | pecl install yaml-beta && \
 	echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && \
 	php5enmod yaml && \
-    sed -i 's/^listen\s*=.*$/listen = 127.0.0.1:9000/' /etc/php5/fpm/pool.d/www.conf && \
+    sed -i 's/^listen\s*=.*$/listen = 0.0.0.0:9000/' /etc/php5/fpm/pool.d/www.conf && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/fpm/php.ini && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/cli/php.ini
 ADD supervisor.php5-fpm.conf /etc/supervisor/conf.d/php5-fpm.conf
 	
 # Install Nginx
-RUN apt-get install -y nginx-light
+RUN apt-get install -y nginx-light && \
+    echo 'daemon off;' >> /etc/nginx/nginx.conf
 ADD supervisor.nginx.conf /etc/supervisor/conf.d/nginx.conf
 
 # Install Composer
@@ -47,7 +48,7 @@ RUN pear channel-discover pear.phpunit.de && \
     php5enmod test_helpers && \
     COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'phpunit/phpunit:*' --prefer-dist
 
-VOLUME ["/data", "/etc/nginx/sites-enabled"]
+VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx"]
 
 EXPOSE 9000
 EXPOSE 80
