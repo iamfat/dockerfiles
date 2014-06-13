@@ -44,7 +44,7 @@ RUN COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'iamfa
 # Install Development Tools    
 RUN pear channel-discover pear.phpunit.de && \
     pecl install phpunit/test_helpers && \
-    echo "extension=test_helpers.so" > /etc/php5/mods-available/test_helpers.ini && \
+    echo "zend_extension=test_helpers.so" > /etc/php5/mods-available/test_helpers.ini && \
     php5enmod test_helpers && \
     COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'phpunit/phpunit:*' --prefer-dist
 
