@@ -5,7 +5,7 @@ MAINTAINER maintain@geneegroup.com
 ADD sources.list /etc/apt/sources.list
 
 # Install Basic Packages
-RUN apt-get update && apt-get install -y language-pack-en
+RUN apt-get update && apt-get install -y language-pack-en bash-completion
 
 # Install Supervisor
 RUN apt-get install -y supervisor && \
@@ -18,7 +18,7 @@ RUN apt-get install -y openssh-server && \
 ADD supervisor.ssh.conf /etc/supervisor/conf.d/ssh.conf
 
 # Install PHP 5.5
-RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-dev libyaml-dev && \
+RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-sqlite php5-curl php5-dev libyaml-dev && \
 	printf "\n" | pecl install yaml-beta && \
 	echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && \
 	php5enmod yaml && \
@@ -27,6 +27,12 @@ RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-r
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/cli/php.ini
 ADD supervisor.php5-fpm.conf /etc/supervisor/conf.d/php5-fpm.conf
 	
+# Install NodeJS, use CNPM source for faster speed in CHINA...
+RUN apt-get install -y npm && \
+    ln -s /usr/bin/nodejs /usr/bin/node && \
+    npm install -g cnpm --registry=http://r.cnpmjs.org & \
+    cnpm install -g less uglify-js
+
 # Install Nginx
 RUN apt-get install -y nginx-light && \
     echo 'daemon off;' >> /etc/nginx/nginx.conf
