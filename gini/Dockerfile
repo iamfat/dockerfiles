@@ -30,7 +30,7 @@ ADD supervisor.php5-fpm.conf /etc/supervisor/conf.d/php5-fpm.conf
 # Install NodeJS, use CNPM source for faster speed in CHINA...
 RUN apt-get install -y npm && \
     ln -s /usr/bin/nodejs /usr/bin/node && \
-    npm install -g cnpm --registry=http://r.cnpmjs.org & \
+    npm install -g cnpm --registry=http://r.cnpmjs.org && \
     cnpm install -g less uglify-js
 
 # Install Nginx
@@ -45,7 +45,7 @@ RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/install
     echo 'PATH="/home/genee/.composer/vendor/bin:$PATH"' >> /home/genee/.profile
 
 # Install Gini
-RUN COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'iamfat/gini:dev-master' --prefer-dist
+RUN COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'iamfat/gini:dev-master'
 
 VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx"]
 

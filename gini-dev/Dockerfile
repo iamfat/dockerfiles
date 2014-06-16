@@ -18,7 +18,7 @@ RUN apt-get install -y openssh-server && \
 ADD supervisor.ssh.conf /etc/supervisor/conf.d/ssh.conf
 
 # Install PHP 5.5
-RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-dev php5-sqlite php5-curl libyaml-dev php5-xdebug && \
+RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-sqlite php5-curl php5-dev libyaml-dev php5-xdebug && \
 	printf "\n" | pecl install yaml-beta && \
 	echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && \
 	php5enmod yaml && \
@@ -30,7 +30,7 @@ ADD supervisor.php5-fpm.conf /etc/supervisor/conf.d/php5-fpm.conf
 # Install NodeJS, use CNPM source for faster speed in CHINA...
 RUN apt-get install -y npm && \
     ln -s /usr/bin/nodejs /usr/bin/node && \
-    npm install -g cnpm --registry=http://r.cnpmjs.org & \
+    npm install -g cnpm --registry=http://r.cnpmjs.org && \
     cnpm install -g less uglify-js
 
 # Install Nginx
@@ -45,14 +45,24 @@ RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/install
     echo 'PATH="/home/genee/.composer/vendor/bin:$PATH"' >> /home/genee/.profile
 
 # Install Gini
-RUN COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'iamfat/gini:dev-master' --prefer-dist
+RUN COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'iamfat/gini:dev-master'
 
 # Install Development Tools    
-RUN pear channel-discover pear.phpunit.de && \
-    pecl install phpunit/test_helpers && \
+ADD git_prompt.sh /home/genee/.git_prompt
+RUN apt-get install -y git && echo '. $HOME/.git_prompt' >> /home/genee/.profile
+
+# Install test-helpers
+RUN git clone https://github.com/php-test-helpers/php-test-helpers.git && \
+    cd php-test-helpers && phpize && ./configure && make && make install && \
     echo "zend_extension=test_helpers.so" > /etc/php5/mods-available/test_helpers.ini && \
-    php5enmod test_helpers && \
-    COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'phpunit/phpunit:*' --prefer-dist
+    php5enmod test_helpers
+
+# Install PHPUnit and PHP-CS-Fixer
+RUN COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'phpunit/phpunit:@stable' 'fabpot/php-cs-fixer:@stable' --prefer-dist
+
+# Install fasd for faster directory change
+RUN git clone https://github.com/clvv/fasd.git fasd && \
+    make -C fasd install && echo 'eval "$(fasd --init auto)"' >> /home/genee/.profile && rm -rf fasd
 
 VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx"]
 
