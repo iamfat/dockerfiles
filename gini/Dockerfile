@@ -40,6 +40,9 @@ RUN apt-get install -y nginx-light && \
     echo 'daemon off;' >> /etc/nginx/nginx.conf
 ADD supervisor.nginx.conf /etc/supervisor/conf.d/nginx.conf
 
+# Install Development Tools
+RUN apt-get install -y git
+
 # Install Composer
 RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/installer');" | php && \
     mv composer.phar /usr/local/bin/composer && \

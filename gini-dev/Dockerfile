@@ -40,6 +40,9 @@ RUN apt-get install -y nginx-light && \
     echo 'daemon off;' >> /etc/nginx/nginx.conf
 ADD supervisor.nginx.conf /etc/supervisor/conf.d/nginx.conf
 
+# Install Development Tools
+RUN apt-get install -y git
+
 # Install Composer
 RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/installer');" | php && \
     mv composer.phar /usr/local/bin/composer && \
@@ -50,10 +53,6 @@ ENV COMPOSER_HOME /usr/local/share/composer
 
 # Install Gini
 RUN composer global require 'iamfat/gini:dev-master'
-
-# Install Development Tools    
-ADD git_prompt.sh /home/genee/.git_prompt
-RUN apt-get install -y git && echo '. $HOME/.git_prompt' >> /home/genee/.profile
 
 # Install test-helpers
 ADD test_helpers.so /usr/lib/php5/20121212/test_helpers.so
@@ -66,6 +65,10 @@ RUN composer global require 'phpunit/phpunit:@stable' 'fabpot/php-cs-fixer:@stab
 # Install fasd for faster directory change
 RUN git clone https://github.com/clvv/fasd.git fasd && \
     make -C fasd install && echo 'eval "$(fasd --init auto)"' >> /home/genee/.profile && rm -rf fasd
+
+# Add git prompt for genee
+ADD git_prompt.sh /home/genee/.git_prompt && echo '. $HOME/.git_prompt' >> /home/genee/.profile
+
 
 VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx"]
 
