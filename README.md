@@ -46,7 +46,14 @@ docker run --name mysql -v /dev/log:/dev/log -v /data:/data \
 ## Redis Environment (Redis + SSH)
 ```bash
 docker build -t iamfat/redis redis
+
+#simple way
 docker run --name redis -v /dev/log:/dev/log -v /data:/data -d iamfat/redis
+
+# more advanced way
+docker run --name mysql -v /dev/log:/dev/log -v /data:/data \
+	-v /data/config/redis:/etc/redis
+	-d iamfat/mysql
 ```
 
 ## Sphinx Search Environment (SphinxSearch + SSH)

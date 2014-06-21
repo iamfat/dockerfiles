@@ -26,7 +26,7 @@ RUN \
   sed -i 's/^\(logfile .*\)$/# \1/' /etc/redis/redis.conf
 ADD supervisor.redis.conf /etc/supervisor/conf.d/redis.conf
 
-VOLUME ["/data"]
+VOLUME ["/data", "/etc/redis"]
 
 EXPOSE 6379
 EXPOSE 22
