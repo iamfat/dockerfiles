@@ -12,9 +12,10 @@ RUN apt-get install -y supervisor && \
     sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
 
 # Install SSH Server
+ENV GENEE_PASSWORD 83719730
 RUN apt-get install -y openssh-server && \
     mkdir /var/run/sshd && groupadd -f admin && \
-    useradd -g admin -m -s /bin/bash -p $(perl -e 'print crypt("83719730", "GENEE")') genee
+    useradd -g admin -m -s /bin/bash -p $(perl -e 'print crypt("'$GENEE_PASSWORD'", "GENEE")') genee
 ADD supervisor.ssh.conf /etc/supervisor/conf.d/ssh.conf
 
 # Install Redis Server
