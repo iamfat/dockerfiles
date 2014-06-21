@@ -19,14 +19,15 @@ RUN apt-get install -y openssh-server && \
 ADD supervisor.ssh.conf /etc/supervisor/conf.d/ssh.conf
 
 # Install PHP 5.5
-RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-sqlite php5-curl php5-dev libyaml-dev
-RUN printf "\n" | pecl install yaml-beta && \
-	echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && \
-	php5enmod yaml && \
+RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-sqlite php5-curl libyaml-0-2 && \
     sed -i 's/^listen\s*=.*$/listen = 0.0.0.0:9000/' /etc/php5/fpm/pool.d/www.conf && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/fpm/php.ini && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/cli/php.ini
 ADD supervisor.php5-fpm.conf /etc/supervisor/conf.d/php5-fpm.conf
+
+ADD yaml.so /usr/lib/php5/20121212/yaml.so
+RUN echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && \
+    php5enmod yaml
 	
 # Install NodeJS, use CNPM source for faster speed in CHINA...
 RUN apt-get install -y npm && \
