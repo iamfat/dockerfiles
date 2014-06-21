@@ -32,7 +32,7 @@ RUN echo "mysql-server mysql-server/root_password password $MYSQL_PASSWORD" | de
 ADD supervisor.mysql.conf /etc/supervisor/conf.d/mysql.conf
 
 # We have to use separate volume for mysql data since it might be really big
-VOLUME ["/data", "/var/lib/mysql"]
+VOLUME ["/data", "/etc/mysql", "/var/lib/mysql"]
 
 EXPOSE 3306
 EXPOSE 22
