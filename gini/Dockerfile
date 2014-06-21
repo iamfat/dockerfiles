@@ -43,11 +43,13 @@ ADD supervisor.nginx.conf /etc/supervisor/conf.d/nginx.conf
 # Install Composer
 RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/installer');" | php && \
     mv composer.phar /usr/local/bin/composer && \
-    echo '' >> /home/genee/.profile && \
-    echo 'PATH="/home/genee/.composer/vendor/bin:$PATH"' >> /home/genee/.profile
+    echo 'COMPOSER_HOME="/usr/local/share/composer"' > /etc/profile.d/composer && \
+    echo 'PATH="/usr/local/share/composer/vendor/bin:$PATH"' > /etc/profile.d/composer
+ENV COMPOSER_PROCESS_TIMEOUT 40000
+ENV COMPOSER_HOME /usr/local/share/composer
 
 # Install Gini
-RUN COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'iamfat/gini:dev-master'
+RUN composer global require 'iamfat/gini:dev-master'
 
 VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx"]
 

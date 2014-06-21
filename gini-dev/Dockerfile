@@ -43,11 +43,13 @@ ADD supervisor.nginx.conf /etc/supervisor/conf.d/nginx.conf
 # Install Composer
 RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/installer');" | php && \
     mv composer.phar /usr/local/bin/composer && \
-    echo '' >> /home/genee/.profile && \
-    echo 'PATH="/home/genee/.composer/vendor/bin:$PATH"' >> /home/genee/.profile
+    echo 'COMPOSER_HOME="/usr/local/share/composer"' > /etc/profile.d/composer && \
+    echo 'PATH="/usr/local/share/composer/vendor/bin:$PATH"' > /etc/profile.d/composer
+ENV COMPOSER_PROCESS_TIMEOUT 40000
+ENV COMPOSER_HOME /usr/local/share/composer
 
 # Install Gini
-RUN COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'iamfat/gini:dev-master'
+RUN composer global require 'iamfat/gini:dev-master'
 
 # Install Development Tools    
 ADD git_prompt.sh /home/genee/.git_prompt
@@ -59,7 +61,7 @@ RUN echo "zend_extension=test_helpers.so" > /etc/php5/mods-available/test_helper
     php5enmod test_helpers
 
 # Install PHPUnit and PHP-CS-Fixer
-RUN COMPOSER_PROCESS_TIMEOUT=40000 sudo -Hu genee composer global require 'phpunit/phpunit:@stable' 'fabpot/php-cs-fixer:@stable' --prefer-dist
+RUN composer global require 'phpunit/phpunit:@stable' 'fabpot/php-cs-fixer:@stable' --prefer-dist
 
 # Install fasd for faster directory change
 RUN git clone https://github.com/clvv/fasd.git fasd && \
