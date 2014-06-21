@@ -24,8 +24,8 @@ RUN echo "mysql-server mysql-server/root_password password $MYSQL_PASSWORD" | de
 	echo "mysql-server mysql-server/root_password_again password $MYSQL_PASSWORD" | debconf-set-selections && \
 	apt-get install -y mysql-server && \
 	sed -i 's/^key_buffer\s*=/key_buffer_size =/' /etc/mysql/my.cnf && \
-	sed -i 's/^bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/' /etc/mysql/my.cnf && \
-	/usr/sbin/mysqld --skip-networking & \
+	sed -i 's/^bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/' /etc/mysql/my.cnf
+RUN /usr/sbin/mysqld --skip-networking & \
     sleep 3s && \
     echo "GRANT ALL ON *.* TO genee@'%' IDENTIFIED BY '$MYSQL_PASSWORD' WITH GRANT OPTION; FLUSH PRIVILEGES" \
     | mysql -u root -p$MYSQL_PASSWORD
