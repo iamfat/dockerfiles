@@ -19,8 +19,8 @@ RUN apt-get install -y openssh-server && \
 ADD supervisor.ssh.conf /etc/supervisor/conf.d/ssh.conf
 
 # Install PHP 5.5
-RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-sqlite php5-curl php5-dev libyaml-dev php5-xdebug && \
-	printf "\n" | pecl install yaml-beta && \
+RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-sqlite php5-curl php5-dev libyaml-dev php5-xdebug
+RUN printf "\n" | pecl install yaml-beta && \
 	echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && \
 	php5enmod yaml && \
     sed -i 's/^listen\s*=.*$/listen = 0.0.0.0:9000/' /etc/php5/fpm/pool.d/www.conf && \
