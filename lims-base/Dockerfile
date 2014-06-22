@@ -5,7 +5,7 @@ MAINTAINER maintain@geneegroup.com
 ADD sources.list /etc/apt/sources.list
 
 # Install Basic Packages
-RUN apt-get update && apt-get upgrade && apt-get install -y language-pack-en bash-completion vim tmux
+RUN apt-get update && apt-get install -y apt-utils sudo vim-tiny language-pack-en bash-completion
 
 # Install Supervisor
 RUN apt-get install -y supervisor && \
@@ -49,8 +49,7 @@ RUN echo "extension=msgpack.so" > /etc/php5/mods-available/msgpack.ini && \
 # Install NodeJS, use CNPM source for faster speed in CHINA...
 ADD nodejs.list /etc/apt/sources.list.d/nodejs.list
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B9316A7BC7917B12 && apt-get update && \
-    apt-get install -y npm && \
-    ln -s /usr/bin/nodejs /usr/bin/node && \
+    apt-get install -y nodejs && \
     npm install -g cnpm --registry=http://r.cnpmjs.org && \
     cnpm install -g less uglify-js
 
@@ -60,7 +59,7 @@ RUN apt-get install -y nginx-light && \
 ADD supervisor.nginx.conf /etc/supervisor/conf.d/nginx.conf
 
 # Install Development Tools
-RUN apt-get install -y git
+RUN apt-get install -y git build-essential
 
 # Install Composer
 RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/installer');" | php && \
