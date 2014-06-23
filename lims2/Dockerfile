@@ -21,7 +21,7 @@ ADD supervisor.ssh.conf /etc/supervisor/conf.d/ssh.conf
 # Install PHP 5.4
 ADD php5-oldstable.list /etc/apt/sources.list.d/php5-oldstable.list
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C && apt-get update && \
-    apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-xcache php5-sqlite php5-curl php5-ldap php5-memcache && \
+    apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysql php5-xcache php5-sqlite php5-curl php5-ldap php5-memcache && \
     sed -i 's/^listen\s*=.*$/listen = 0.0.0.0:9000/' /etc/php5/fpm/pool.d/www.conf && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/fpm/php.ini && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/cli/php.ini
@@ -67,10 +67,30 @@ RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/install
     echo 'export COMPOSER_HOME="/usr/local/share/composer"' > /etc/profile.d/composer.sh && \
     echo 'export PATH="/usr/local/share/composer/vendor/bin:$PATH"' >> /etc/profile.d/composer.sh
 
-# Install MySQL Client
-RUN apt-get install -y mysql-client
+# Install MySQL Server
+ENV MYSQL_PASSWORD 83719730
+RUN echo "mysql-server mysql-server/root_password password $MYSQL_PASSWORD" | debconf-set-selections && \
+    echo "mysql-server mysql-server/root_password_again password $MYSQL_PASSWORD" | debconf-set-selections && \
+    apt-get install -y mysql-server && \
+    sed -i 's/^key_buffer\s*=/key_buffer_size =/' /etc/mysql/my.cnf
+RUN /usr/sbin/mysqld --skip-networking & \
+    sleep 3s && \
+    echo "GRANT ALL ON *.* TO genee@'%' IDENTIFIED BY '$MYSQL_PASSWORD' WITH GRANT OPTION; FLUSH PRIVILEGES" \
+    | mysql -u root -p$MYSQL_PASSWORD
+ADD supervisor.mysql.conf /etc/supervisor/conf.d/mysql.conf
 
-VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx"]
+# Install Memcached
+RUN apt-get install -y memcached
+
+# Install Sphinxsearch Server
+ADD sphinxsearch-beta.list /etc/apt/sources.list.d/sphinxsearch-beta.list
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B9D8946B16932B16 && \
+    apt-get update && apt-get install -y sphinxsearch && \
+    mkdir -p /etc/sphinxsearch/conf.d
+ADD supervisor.sphinxsearch.conf /etc/supervisor/conf.d/sphinxsearch.conf
+ADD sphinx.conf.sh /etc/sphinxsearch/sphinx.conf.sh
+
+VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx", "/etc/mysql", "/var/lib/mysql", "/etc/sphinxsearch", "/var/lib/sphinxsearch"]
 
 EXPOSE 9000
 EXPOSE 80

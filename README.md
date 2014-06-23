@@ -5,20 +5,20 @@ My Dockerfiles
 ```bash
 docker build -t iamfat/gini gini
 docker run --name gini -v /dev/log:/dev/log -v /data:/data --privileged \
-	-v /data/config/sites:/etc/nginx/sites-enabled \
-	-v /data/logs/nginx:/var/log/nginx \
-	-p 80:80 \
-	-d iamfat/gini
+    -v /data/config/sites:/etc/nginx/sites-enabled \
+    -v /data/logs/nginx:/var/log/nginx \
+    -p 80:80 \
+    -d iamfat/gini
 ```
 ## Gini Dev Environment (PHPUnit + Gini + Composer + PHP5.5 + Nginx + SSH)
 ```bash
 docker build -t iamfat/gini-dev gini-dev
 
 docker run --name gini-dev -v /dev/log:/dev/log -v /data:/data --privileged \
-	-v /data/config/sites:/etc/nginx/sites-enabled \
-	-v /data/logs/nginx:/var/log/nginx \
-	-p 80:80 \
-	-d iamfat/gini-dev
+    -v /data/config/sites:/etc/nginx/sites-enabled \
+    -v /data/logs/nginx:/var/log/nginx \
+    -p 80:80 \
+    -d iamfat/gini-dev
 ```
 ## MySQL Environment (MySQL + SSH)
 ```bash
@@ -29,9 +29,9 @@ docker run --name mysql -v /dev/log:/dev/log -v /data:/data --privileged -d iamf
 
 # more advanced way
 docker run --name mysql -v /dev/log:/dev/log -v /data:/data --privileged \
-	-v /data/config/mysql:/etc/mysql \
-	-v /data/mysql:/var/lib/mysql \
-	-d iamfat/mysql
+    -v /data/config/mysql:/etc/mysql \
+    -v /data/mysql:/var/lib/mysql \
+    -d iamfat/mysql
 ```
 ## Redis Environment (Redis + SSH)
 ```bash
@@ -42,8 +42,8 @@ docker run --name redis -v /dev/log:/dev/log -v /data:/data --privileged -d iamf
 
 # more advanced way
 docker run --name redis -v /dev/log:/dev/log -v /data:/data --privileged \
-	-v /data/config/redis:/etc/redis \
-	-d iamfat/redis
+    -v /data/config/redis:/etc/redis \
+    -d iamfat/redis
 ```
 
 ## Sphinx Search Environment (SphinxSearch + SSH)
@@ -55,9 +55,47 @@ docker run --name sphinxsearch -v /dev/log:/dev/log -v /data:/data --privileged 
 
 # more advanced way
 docker run --name sphinxsearch -v /dev/log:/dev/log -v /data:/data --privileged \
-	-v /data/config/sphinxsearch:/etc/sphinxsearch \
-	-v /data/sphinxsearch:/var/lib/sphinxsearch \
-	-d iamfat/sphinxsearch
+    -v /data/config/sphinxsearch:/etc/sphinxsearch \
+    -v /data/sphinxsearch:/var/lib/sphinxsearch \
+    -d iamfat/sphinxsearch
 ```
 
+## LIMS Base Environment (PHP + NGINX + SSH)
+```bash
+docker build -t iamfat/lims-base lims-base
 
+#simple way
+docker run --name lims -v /dev/log:/dev/log -v /data:/data --privileged -d iamfat/lims-base
+
+# more advanced way
+docker run --name lims -v /dev/log:/dev/log -v /data:/data --privileged \
+    -v /data/config/sites:/etc/nginx/sites-enabled \
+    -v /data/logs/nginx:/var/log/nginx \
+    -d iamfat/lims-base
+```
+
+## LIMS2 Environment
+```bash
+docker build -t iamfat/lims2 lims2
+
+export BASE_DIR=/data/lims2 
+docker run --name lims -v /dev/log:/dev/log -v /data:/data --privileged \
+    -v $BASE_DIR/config/sites:/etc/nginx/sites-enabled \
+    -v $BASE_DIR/config/sphinxsearch:/etc/sphinxsearch \
+    -v $BASE_DIR/logs/nginx:/var/log/nginx \
+    -v $BASE_DIR/logs/mysql:/var/log/mysql \
+    -v $BASE_DIR/logs/sphinxsearch:/var/log/sphinxsearch \
+    -v $BASE_DIR/mysql:/var/lib/mysql \
+    -v $BASE_DIR/sphinxsearch:/var/lib/sphinxsearch \
+    -d iamfat/lims2
+
+docker run --name lims -v /dev/log:/dev/log -v /data:/data --privileged \
+    -v $BASE_DIR/config/sites:/etc/nginx/sites-enabled \
+    -v $BASE_DIR/config/sphinxsearch:/etc/sphinxsearch \
+    -v $BASE_DIR/logs/nginx:/var/log/nginx \
+    -v $BASE_DIR/logs/mysql:/var/log/mysql \
+    -v $BASE_DIR/logs/sphinxsearch:/var/log/sphinxsearch \
+    -v $BASE_DIR/mysql:/var/lib/mysql \
+    -v $BASE_DIR/sphinxsearch:/var/lib/sphinxsearch \
+    -i -t iamfat/lims2 bin/bash
+```
