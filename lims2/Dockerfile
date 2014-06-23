@@ -79,9 +79,6 @@ RUN /usr/sbin/mysqld --skip-networking & \
     | mysql -u root -p$MYSQL_PASSWORD
 ADD supervisor.mysql.conf /etc/supervisor/conf.d/mysql.conf
 
-# Install Memcached
-RUN apt-get install -y memcached
-
 # Install Sphinxsearch Server
 ADD sphinxsearch-beta.list /etc/apt/sources.list.d/sphinxsearch-beta.list
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B9D8946B16932B16 && \
@@ -89,6 +86,14 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B9D8946B16932B16 &&
     mkdir -p /etc/sphinxsearch/conf.d
 ADD supervisor.sphinxsearch.conf /etc/supervisor/conf.d/sphinxsearch.conf
 ADD sphinx.conf.sh /etc/sphinxsearch/sphinx.conf.sh
+
+# Install Memcached
+RUN apt-get install -y memcached
+ADD supervisor.memcached.conf /etc/supervisor/conf.d/memcached.conf
+
+# Install Xinetd
+RUN apt-get install -y xinetd
+ADD supervisor.xinetd.conf /etc/supervisor/conf.d/xinetd.conf
 
 VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx", "/etc/mysql", "/var/lib/mysql", "/etc/sphinxsearch", "/var/lib/sphinxsearch"]
 

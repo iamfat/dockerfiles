@@ -78,24 +78,27 @@ docker run --name lims -v /dev/log:/dev/log -v /data:/data --privileged \
 ```bash
 docker build -t iamfat/lims2 lims2
 
-export BASE_DIR=/data/lims2 
-docker run --name lims -v /dev/log:/dev/log -v /data:/data --privileged \
-    -v $BASE_DIR/config/sites:/etc/nginx/sites-enabled \
-    -v $BASE_DIR/config/sphinxsearch:/etc/sphinxsearch \
-    -v $BASE_DIR/logs/nginx:/var/log/nginx \
-    -v $BASE_DIR/logs/mysql:/var/log/mysql \
-    -v $BASE_DIR/logs/sphinxsearch:/var/log/sphinxsearch \
-    -v $BASE_DIR/mysql:/var/lib/mysql \
-    -v $BASE_DIR/sphinxsearch:/var/lib/sphinxsearch \
+export BASE_DIR=/data/lims2
+export SITE_ID=cf
+export LAB_ID=nankai
+
+docker run --name lims -v /dev/log:/dev/log -v $BASE_DIR:/data --privileged \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/config/sites:/etc/nginx/sites-enabled \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/config/sphinxsearch:/etc/sphinxsearch \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/logs/nginx:/var/log/nginx \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/logs/mysql:/var/log/mysql \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/logs/sphinxsearch:/var/log/sphinxsearch \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/mysql:/var/lib/mysql \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/sphinxsearch:/var/lib/sphinxsearch \
     -d iamfat/lims2
 
-docker run --name lims -v /dev/log:/dev/log -v /data:/data --privileged \
-    -v $BASE_DIR/config/sites:/etc/nginx/sites-enabled \
-    -v $BASE_DIR/config/sphinxsearch:/etc/sphinxsearch \
-    -v $BASE_DIR/logs/nginx:/var/log/nginx \
-    -v $BASE_DIR/logs/mysql:/var/log/mysql \
-    -v $BASE_DIR/logs/sphinxsearch:/var/log/sphinxsearch \
-    -v $BASE_DIR/mysql:/var/lib/mysql \
-    -v $BASE_DIR/sphinxsearch:/var/lib/sphinxsearch \
+docker run --name lims -v /dev/log:/dev/log -v $BASE_DIR:/data --privileged \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/config/sites:/etc/nginx/sites-enabled \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/config/sphinxsearch:/etc/sphinxsearch \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/logs/nginx:/var/log/nginx \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/logs/mysql:/var/log/mysql \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/logs/sphinxsearch:/var/log/sphinxsearch \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/mysql:/var/lib/mysql \
+    -v $BASE_DIR/$SITE_ID/$LAB_ID/sphinxsearch:/var/lib/sphinxsearch \
     -i -t iamfat/lims2 bin/bash
 ```
