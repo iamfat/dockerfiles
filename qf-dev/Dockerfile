@@ -1,11 +1,11 @@
-FROM ubuntu:12.04
+FROM ubuntu:14.04
 MAINTAINER maintain@geneegroup.com
 
 # Use faster APT mirror
 ADD sources.list /etc/apt/sources.list
 
 # Install Basic Packages
-RUN apt-get update && apt-get install -y apt-utils sudo vim-tiny language-pack-en bash-completion
+RUN apt-get update && apt-get install -y language-pack-en bash-completion
 
 # Install Supervisor
 RUN apt-get install -y supervisor && \
@@ -18,38 +18,20 @@ RUN apt-get install -y openssh-server && \
     useradd -g admin -m -s /bin/bash -p $(perl -e 'print crypt("'$GENEE_PASSWORD'", "GENEE")') genee
 ADD supervisor.ssh.conf /etc/supervisor/conf.d/ssh.conf
 
-# Install PHP 5.4
-ADD php5-oldstable.list /etc/apt/sources.list.d/php5-oldstable.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C && apt-get update && \
-    apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-xcache php5-sqlite php5-curl php5-ldap php5-memcache php5-dev && \
+# Install PHP 5.5
+RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-sqlite php5-curl php5-xdebug libyaml-0-2 && \
     sed -i 's/^listen\s*=.*$/listen = 0.0.0.0:9000/' /etc/php5/fpm/pool.d/www.conf && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/fpm/php.ini && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/cli/php.ini
 ADD supervisor.php5-fpm.conf /etc/supervisor/conf.d/php5-fpm.conf
 
-ADD yaml.so /usr/lib/php5/20100525/yaml.so
-RUN apt-get install -y libyaml-0-2 && \
-    echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && \
+ADD yaml.so /usr/lib/php5/20121212/yaml.so
+RUN echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && \
     php5enmod yaml
     
-ADD lua.so /usr/lib/php5/20100525/lua.so
-RUN apt-get install -y liblua5.2-0 && \
-    echo "extension=lua.so" > /etc/php5/mods-available/lua.ini && \
-    php5enmod lua
-    
-ADD zmq.so /usr/lib/php5/20100525/zmq.so
-RUN apt-get install -y libzmq3 && \
-    echo "extension=zmq.so" > /etc/php5/mods-available/zmq.ini && \
-    php5enmod zmq
-    
-ADD msgpack.so /usr/lib/php5/20100525/msgpack.so
-RUN echo "extension=msgpack.so" > /etc/php5/mods-available/msgpack.ini && \
-    php5enmod msgpack
-    
 # Install NodeJS, use CNPM source for faster speed in CHINA...
-ADD nodejs.list /etc/apt/sources.list.d/nodejs.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B9316A7BC7917B12 && apt-get update && \
-    apt-get install -y nodejs && \
+RUN apt-get install -y npm && \
+    ln -s /usr/bin/nodejs /usr/bin/node && \
     npm install -g cnpm --registry=http://r.cnpmjs.org && \
     cnpm install -g less uglify-js
 
@@ -59,13 +41,33 @@ RUN apt-get install -y nginx-light && \
 ADD supervisor.nginx.conf /etc/supervisor/conf.d/nginx.conf
 
 # Install Development Tools
-RUN apt-get install -y git build-essential
+RUN apt-get install -y git
 
 # Install Composer
 RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/installer');" | php && \
     mv composer.phar /usr/local/bin/composer && \
     echo 'export COMPOSER_HOME="/usr/local/share/composer"' > /etc/profile.d/composer.sh && \
     echo 'export PATH="/usr/local/share/composer/vendor/bin:$PATH"' >> /etc/profile.d/composer.sh
+ENV COMPOSER_PROCESS_TIMEOUT 40000
+ENV COMPOSER_HOME /usr/local/share/composer
+
+# Install Gini
+RUN composer global require 'iamfat/gini:dev-master'
+
+# Install test-helpers
+ADD test_helpers.so /usr/lib/php5/20121212/test_helpers.so
+RUN echo "zend_extension=test_helpers.so" > /etc/php5/mods-available/test_helpers.ini && \
+    php5enmod test_helpers
+
+# Install PHPUnit and PHP-CS-Fixer
+RUN composer global require 'phpunit/phpunit:@stable' 'fabpot/php-cs-fixer:@stable' --prefer-dist
+
+# Install fasd for faster directory change
+RUN git clone https://github.com/clvv/fasd.git fasd && \
+    make -C fasd install && echo 'eval "$(fasd --init auto)"' >> /home/genee/.profile && rm -rf fasd
+
+# Add git prompt for genee
+ADD git_prompt.sh /home/genee/.git_prompt && echo '. $HOME/.git_prompt' >> /home/genee/.profile
 
 # Install MySQL Client
 RUN apt-get install -y mysql-client
