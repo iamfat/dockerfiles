@@ -51,9 +51,6 @@ RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/install
 ENV COMPOSER_PROCESS_TIMEOUT 40000
 ENV COMPOSER_HOME /usr/local/share/composer
 
-# Install Gini
-RUN composer global require 'iamfat/gini:dev-master'
-
 # Install test-helpers
 ADD test_helpers.so /usr/lib/php5/20121212/test_helpers.so
 RUN echo "zend_extension=test_helpers.so" > /etc/php5/mods-available/test_helpers.ini && \
