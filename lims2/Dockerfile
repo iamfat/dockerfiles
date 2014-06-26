@@ -1,11 +1,11 @@
-FROM ubuntu:12.04
+FROM ubuntu:14.04
 MAINTAINER maintain@geneegroup.com
 
 # Use faster APT mirror
 ADD sources.list /etc/apt/sources.list
 
 # Install Basic Packages
-RUN apt-get update && apt-get install -y apt-utils sudo vim-tiny language-pack-en bash-completion
+RUN apt-get update && apt-get install -y language-pack-en bash-completion
 
 # Install Supervisor
 RUN apt-get install -y supervisor && \
@@ -18,38 +18,30 @@ RUN apt-get install -y openssh-server && \
     useradd -g admin -m -s /bin/bash -p $(perl -e 'print crypt("'$GENEE_PASSWORD'", "GENEE")') genee
 ADD supervisor.ssh.conf /etc/supervisor/conf.d/ssh.conf
 
-# Install PHP 5.4
-ADD php5-oldstable.list /etc/apt/sources.list.d/php5-oldstable.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C && apt-get update && \
-    apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysql php5-xcache php5-sqlite php5-curl php5-ldap php5-memcache && \
+# Install PHP 5.5
+RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-sqlite php5-curl php5-msgpack libyaml-0-2 && \
     sed -i 's/^listen\s*=.*$/listen = 0.0.0.0:9000/' /etc/php5/fpm/pool.d/www.conf && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/fpm/php.ini && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/cli/php.ini
 ADD supervisor.php5-fpm.conf /etc/supervisor/conf.d/php5-fpm.conf
 
-ADD yaml.so /usr/lib/php5/20100525/yaml.so
-RUN apt-get install -y libyaml-0-2 && \
-    echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && \
+ADD yaml.so /usr/lib/php5/20121212/yaml.so
+RUN echo "extension=yaml.so" > /etc/php5/mods-available/yaml.ini && \
     php5enmod yaml
     
-ADD lua.so /usr/lib/php5/20100525/lua.so
+ADD lua.so /usr/lib/php5/20121212/lua.so
 RUN apt-get install -y liblua5.2-0 && \
     echo "extension=lua.so" > /etc/php5/mods-available/lua.ini && \
     php5enmod lua
     
-ADD zmq.so /usr/lib/php5/20100525/zmq.so
+ADD zmq.so /usr/lib/php5/20121212/zmq.so
 RUN apt-get install -y libzmq3 && \
     echo "extension=zmq.so" > /etc/php5/mods-available/zmq.ini && \
     php5enmod zmq
-    
-ADD msgpack.so /usr/lib/php5/20100525/msgpack.so
-RUN echo "extension=msgpack.so" > /etc/php5/mods-available/msgpack.ini && \
-    php5enmod msgpack
-    
+
 # Install NodeJS, use CNPM source for faster speed in CHINA...
-ADD nodejs.list /etc/apt/sources.list.d/nodejs.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B9316A7BC7917B12 && apt-get update && \
-    apt-get install -y nodejs && \
+RUN apt-get install -y npm && \
+    ln -s /usr/bin/nodejs /usr/bin/node && \
     npm install -g cnpm --registry=http://r.cnpmjs.org && \
     cnpm install -g less uglify-js
 
@@ -59,46 +51,40 @@ RUN apt-get install -y nginx-light && \
 ADD supervisor.nginx.conf /etc/supervisor/conf.d/nginx.conf
 
 # Install Development Tools
-RUN apt-get install -y git build-essential
+RUN apt-get install -y git
 
 # Install Composer
 RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/installer');" | php && \
     mv composer.phar /usr/local/bin/composer && \
     echo 'export COMPOSER_HOME="/usr/local/share/composer"' > /etc/profile.d/composer.sh && \
     echo 'export PATH="/usr/local/share/composer/vendor/bin:$PATH"' >> /etc/profile.d/composer.sh
+ENV COMPOSER_PROCESS_TIMEOUT 40000
+ENV COMPOSER_HOME /usr/local/share/composer
 
-# Install MySQL Server
-ENV MYSQL_PASSWORD 83719730
-RUN echo "mysql-server mysql-server/root_password password $MYSQL_PASSWORD" | debconf-set-selections && \
-    echo "mysql-server mysql-server/root_password_again password $MYSQL_PASSWORD" | debconf-set-selections && \
-    apt-get install -y mysql-server && \
-    sed -i 's/^key_buffer\s*=/key_buffer_size =/' /etc/mysql/my.cnf
-RUN /usr/sbin/mysqld --skip-networking & \
-    sleep 3s && \
-    echo "GRANT ALL ON *.* TO genee@'%' IDENTIFIED BY '$MYSQL_PASSWORD' WITH GRANT OPTION; FLUSH PRIVILEGES" \
-    | mysql -u root -p$MYSQL_PASSWORD
-ADD supervisor.mysql.conf /etc/supervisor/conf.d/mysql.conf
+# Install fasd for faster directory change
+RUN git clone https://github.com/clvv/fasd.git fasd && \
+    make -C fasd install && echo 'eval "$(fasd --init auto)"' >> /home/genee/.profile && rm -rf fasd
 
-# Install Sphinxsearch Server
-ADD sphinxsearch-beta.list /etc/apt/sources.list.d/sphinxsearch-beta.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B9D8946B16932B16 && \
-    apt-get update && apt-get install -y sphinxsearch && \
-    mkdir -p /etc/sphinxsearch/conf.d
-ADD supervisor.sphinxsearch.conf /etc/supervisor/conf.d/sphinxsearch.conf
-ADD sphinx.conf.sh /etc/sphinxsearch/sphinx.conf.sh
+# Install MySQL Client
+RUN apt-get install -y mysql-client
 
 # Install Memcached
-RUN apt-get install -y memcached
+RUN apt-get install -y php5-memcache memcached
 ADD supervisor.memcached.conf /etc/supervisor/conf.d/memcached.conf
 
-# Install Xinetd
-RUN apt-get install -y xinetd
-ADD supervisor.xinetd.conf /etc/supervisor/conf.d/xinetd.conf
+# Install Friso && Robbe
+ADD libfriso.so /usr/lib/libfriso.so
+ADD robbe.so /usr/lib/php5/20121212/robbe.so
+RUN echo "extension=robbe.so" > /etc/php5/mods-available/robbe.ini && \
+    echo "[robbe]" >> /etc/php5/mods-available/robbe.ini && \
+    echo "robbe.ini_file=/etc/friso/friso.ini" >> /etc/php5/mods-available/robbe.ini && \
+    php5enmod robbe
 
-VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx", "/etc/mysql", "/var/lib/mysql", "/etc/sphinxsearch", "/var/lib/sphinxsearch"]
+VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx"]
 
 EXPOSE 9000
 EXPOSE 80
 EXPOSE 22
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+ENTRYPOINT ["/usr/bin/supervisord"]
+CMD ["-c", "/etc/supervisor/supervisord.conf"]

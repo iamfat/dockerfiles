@@ -19,7 +19,7 @@ RUN apt-get install -y openssh-server && \
 ADD supervisor.ssh.conf /etc/supervisor/conf.d/ssh.conf
 
 # Install PHP 5.5
-RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-redis php5-sqlite php5-curl php5-xdebug libyaml-0-2 && \
+RUN apt-get install -y php5-fpm php5-cli php5-gd php5-mcrypt php5-mysqlnd php5-sqlite php5-curl libyaml-0-2 && \
     sed -i 's/^listen\s*=.*$/listen = 0.0.0.0:9000/' /etc/php5/fpm/pool.d/www.conf && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/fpm/php.ini && \
     sed -i 's/^\;error_log\s*=\s*syslog\s*$/error_log = syslog/' /etc/php5/cli/php.ini
@@ -51,14 +51,6 @@ RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/install
 ENV COMPOSER_PROCESS_TIMEOUT 40000
 ENV COMPOSER_HOME /usr/local/share/composer
 
-# Install test-helpers
-ADD test_helpers.so /usr/lib/php5/20121212/test_helpers.so
-RUN echo "zend_extension=test_helpers.so" > /etc/php5/mods-available/test_helpers.ini && \
-    php5enmod test_helpers
-
-# Install PHPUnit and PHP-CS-Fixer
-RUN composer global require 'phpunit/phpunit:@stable' 'fabpot/php-cs-fixer:@stable' --prefer-dist
-
 # Install fasd for faster directory change
 RUN git clone https://github.com/clvv/fasd.git fasd && \
     make -C fasd install && echo 'eval "$(fasd --init auto)"' >> /home/genee/.profile && rm -rf fasd
@@ -72,6 +64,14 @@ RUN apt-get install -y mysql-client
 # Install Memcached
 RUN apt-get install -y php5-memcache memcached
 ADD supervisor.memcached.conf /etc/supervisor/conf.d/memcached.conf
+
+# Install Friso && Robbe
+ADD libfriso.so /usr/lib/libfriso.so
+ADD robbe.so /usr/lib/php5/20121212/robbe.so
+RUN echo "extension=robbe.so" > /etc/php5/mods-available/robbe.ini && \
+    echo "[robbe]" >> /etc/php5/mods-available/robbe.ini && \
+    echo "robbe.ini_file=/etc/friso/friso.ini" >> /etc/php5/mods-available/robbe.ini && \
+    php5enmod robbe
 
 VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx"]
 

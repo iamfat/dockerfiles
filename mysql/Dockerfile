@@ -32,7 +32,7 @@ RUN /usr/sbin/mysqld --skip-networking & \
 ADD supervisor.mysql.conf /etc/supervisor/conf.d/mysql.conf
 
 # We have to use separate volume for mysql data since it might be really big
-VOLUME ["/data", "/etc/mysql", "/var/lib/mysql"]
+VOLUME ["/data", "/etc/mysql", "/var/lib/mysql", "/var/log/mysql"]
 
 EXPOSE 3306
 EXPOSE 22
