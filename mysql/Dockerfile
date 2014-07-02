@@ -37,5 +37,8 @@ VOLUME ["/data", "/etc/mysql", "/var/lib/mysql", "/var/log/mysql"]
 EXPOSE 3306
 EXPOSE 22
 
-ENTRYPOINT ["/usr/bin/supervisord"]
-CMD ["-c", "/etc/supervisor/supervisord.conf"]
+ADD entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
