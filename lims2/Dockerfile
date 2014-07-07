@@ -72,6 +72,10 @@ RUN apt-get install -y mysql-client
 RUN apt-get install -y php5-memcache memcached
 ADD supervisor.memcached.conf /etc/supervisor/conf.d/memcached.conf
 
+# Install Beanstalkd
+RUN apt-get install -y beanstalkd
+ADD supervisor.beanstalkd.conf /etc/supervisor/conf.d/beanstalkd.conf
+
 # Install Friso && Robbe
 ADD libfriso.so /usr/lib/libfriso.so
 ADD robbe.so /usr/lib/php5/20121212/robbe.so
@@ -82,6 +86,7 @@ RUN echo "extension=robbe.so" > /etc/php5/mods-available/robbe.ini && \
 
 VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx"]
 
+EXPOSE 11300
 EXPOSE 9000
 EXPOSE 80
 EXPOSE 22
