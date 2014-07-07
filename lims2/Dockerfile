@@ -76,6 +76,10 @@ ADD supervisor.memcached.conf /etc/supervisor/conf.d/memcached.conf
 RUN apt-get install -y beanstalkd
 ADD supervisor.beanstalkd.conf /etc/supervisor/conf.d/beanstalkd.conf
 
+# Install easyrun
+RUN npm install -g genee-easyrun
+ADD supervisor.easyrun.conf /etc/supervisor/conf.d/easyrun.conf
+
 # Install Friso && Robbe
 ADD libfriso.so /usr/lib/libfriso.so
 ADD robbe.so /usr/lib/php5/20121212/robbe.so
