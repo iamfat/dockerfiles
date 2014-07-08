@@ -80,6 +80,17 @@ ADD supervisor.beanstalkd.conf /etc/supervisor/conf.d/beanstalkd.conf
 RUN npm install -g genee-easyrun
 ADD supervisor.easyrun.conf /etc/supervisor/conf.d/easyrun.conf
 
+# Install node-lims2
+ADD node-lims2 /home/genee/node-lims2
+RUN ls /home/genee
+RUN chown -R genee:admin /home/genee/node-lims2
+RUN apt-get install -y nodejs beanstalkd build-essential
+RUN su -l -s /bin/sh -c 'cd /home/genee/node-lims2 && npm install' genee
+RUN /bin/sh -c 'cd /home/genee/node-lims2 && ./deploy.sh'
+RUN mkdir -p /var/log/node-lims2
+RUN chown -R genee:admin /var/log/node-lims2
+ADD supervisor.node-lims2.conf /etc/supervisor/conf.d/node-lims2.conf
+
 # Install Friso && Robbe
 ADD libfriso.so /usr/lib/libfriso.so
 ADD robbe.so /usr/lib/php5/20121212/robbe.so
