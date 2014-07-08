@@ -106,5 +106,10 @@ EXPOSE 9000
 EXPOSE 80
 EXPOSE 22
 
-ENTRYPOINT ["/usr/bin/supervisord"]
-CMD ["-c", "/etc/supervisor/supervisord.conf"]
+ADD entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ADD entrypoint.d /entrypoint.d
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
