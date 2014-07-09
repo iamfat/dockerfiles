@@ -73,7 +73,7 @@ RUN echo "extension=robbe.so" > /etc/php5/mods-available/robbe.ini && \
     echo "robbe.ini_file=/etc/friso/friso.ini" >> /etc/php5/mods-available/robbe.ini && \
     php5enmod robbe
 
-VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx"]
+VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx", "/etc/friso"]
 
 EXPOSE 9000
 EXPOSE 80
