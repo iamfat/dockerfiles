@@ -1,9 +1,11 @@
 #!/bin/sh
 
-lab_link=${LIMS2_DIR}/sites/lab
-rm -rf ${lab_link}
-ln -s ${LAB_DIR} ${lab_link}
+prefix=$DOCKER_LIMS2_DIR
 
-cache_link=${LIMS2_DIR}/public/cache
+lab_link=${prefix}/sites/lab
+rm -rf ${lab_link}
+ln -s ${DOCKER_LAB_DIR} ${lab_link}
+
+cache_link=${prefix}/public/cache
 rm -rf ${cache_link}
-ln -s ${CACHE_DIR} ${cache_link}
+ln -s ${DOCKER_CACHE_DIR} ${cache_link}

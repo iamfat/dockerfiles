@@ -1,10 +1,13 @@
 #!/bin/sh
 
-if [ -e "$NODE_LIMS2_DIR" ]; then
-	chown -R genee:admin "$NODE_LIMS2_DIR"
-	su -l -s /bin/sh -c 'cd $NODE_LIMS2_DIR && npm install' genee
-	/bin/sh -c 'cd $NODE_LIMS2_DIR && ./deploy.sh'
+d=$DOCKER_NODE_LIMS2_DIR
+
+if [ -e "$d" ]; then
+	chown -R genee:admin "$d"
+	su -l -s /bin/sh -c "cd $d && npm install" genee
+	/bin/sh -c "cd $d && ./deploy.sh"
 fi
 
-[ -e "$NODE_LIMS2_LOG_DIR" ] || mkdir -p "$NODE_LIMS2_LOG_DIR"
-chown -R genee:admin "$NODE_LIMS2_LOG_DIR"
+logdir=$DOCKER_NODE_LIMS2_LOG_DIR
+[ -e "$logdir" ] || mkdir -p "$logdir"
+chown -R genee:admin "$logdir"

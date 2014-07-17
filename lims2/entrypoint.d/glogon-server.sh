@@ -1,7 +1,8 @@
 #!/bin/sh
 
-if [ -e "$GLOGON_SERVER_DIR" ]; then
-	chown -R genee:admin "$GLOGON_SERVER_DIR"
-	su -l -s /bin/sh -c 'cd $GLOGON_SERVER_DIR && npm install' genee
-	/bin/sh -c 'cd $GLOGON_SERVER_DIR && ./deploy.sh'
+d=$DOCKER_GLOGON_SERVER_DIR
+if [ -e "$d" ]; then
+	chown -R genee:admin "$d"
+	su -l -s /bin/sh -c "cd $d && npm install" genee
+	/bin/sh -c "cd $d && ./deploy.sh"
 fi
