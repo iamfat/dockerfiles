@@ -72,6 +72,9 @@ RUN apt-get install -y mysql-client
 RUN apt-get install -y php5-memcache memcached
 ADD supervisor.memcached.conf /etc/supervisor/conf.d/memcached.conf
 
+# Install clamav so that we can use clamav to scan virus
+RUN apt-get install -y clamav
+
 # Install Friso && Robbe
 ADD libfriso.so /usr/lib/libfriso.so
 ADD robbe.so /usr/lib/php5/20121212/robbe.so
