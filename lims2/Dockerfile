@@ -76,6 +76,9 @@ ADD supervisor.memcached.conf /etc/supervisor/conf.d/memcached.conf
 RUN apt-get install -y beanstalkd
 ADD supervisor.beanstalkd.conf /etc/supervisor/conf.d/beanstalkd.conf
 
+# Install clamav so that we can scan virus
+RUN apt-get install -y clamav
+
 # Install easyrun
 RUN npm install -g genee-easyrun
 ADD supervisor.easyrun.conf /etc/supervisor/conf.d/easyrun.conf
