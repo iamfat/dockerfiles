@@ -104,6 +104,9 @@ ADD supervisor.glogon-server.conf /etc/supervisor/conf.d/glogon-server.conf
 # Install epc-server
 ADD supervisor.epc-server.conf /etc/supervisor/conf.d/epc-server.conf
 
+# Install icco-server
+ADD supervisor.icco-server.conf /etc/supervisor/conf.d/icco-server.conf
+
 # Install Friso && Robbe
 ADD libfriso.so /usr/lib/libfriso.so
 ADD robbe.so /usr/lib/php5/20121212/robbe.so
