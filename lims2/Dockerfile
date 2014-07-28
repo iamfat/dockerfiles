@@ -91,13 +91,18 @@ ADD supervisor.easyrun.conf /etc/supervisor/conf.d/easyrun.conf
 RUN apt-get install -y nodejs beanstalkd build-essential
 ADD supervisor.node-lims2.conf /etc/supervisor/conf.d/node-lims2.conf
 
-# Install glogon-server
+# Install zeromq
 RUN apt-get install -y build-essential php-pear php5-dev
 RUN apt-get install -y software-properties-common
 RUN add-apt-repository ppa:chris-lea/zeromq
 RUN apt-get update
 RUN apt-get install -y libzmq3-dev libpgm-dev pkg-config
+
+# Install glogon-server
 ADD supervisor.glogon-server.conf /etc/supervisor/conf.d/glogon-server.conf
+
+# Install epc-server
+ADD supervisor.epc-server.conf /etc/supervisor/conf.d/epc-server.conf
 
 # Install Friso && Robbe
 ADD libfriso.so /usr/lib/libfriso.so
