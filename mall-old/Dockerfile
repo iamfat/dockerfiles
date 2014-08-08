@@ -42,13 +42,6 @@ RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/install
 ENV COMPOSER_PROCESS_TIMEOUT 40000
 ENV COMPOSER_HOME /usr/local/share/composer
 
-# Install fasd for faster directory change
-RUN git clone https://github.com/clvv/fasd.git fasd && \
-    make -C fasd install && echo 'eval "$(fasd --init auto)"' >> /home/genee/.profile && rm -rf fasd
-
-# Add git prompt for genee
-ADD git_prompt.sh /home/genee/.git_prompt && echo '. $HOME/.git_prompt' >> /home/genee/.profile
-
 # Install MySQL Client
 RUN apt-get install -y mysql-client
 
@@ -64,7 +57,7 @@ RUN echo "extension=robbe.so" > /etc/php5/mods-available/robbe.ini && \
     echo "robbe.ini_file=/etc/friso/friso.ini" >> /etc/php5/mods-available/robbe.ini && \
     php5enmod robbe
 
-VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx", "/etc/friso"]
+# VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx", "/etc/friso"]
 
 EXPOSE 9000
 EXPOSE 80
