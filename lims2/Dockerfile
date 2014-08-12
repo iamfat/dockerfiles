@@ -110,6 +110,9 @@ ADD supervisor.icco-server.conf /etc/supervisor/conf.d/icco-server.conf
 # Install env-server
 ADD supervisor.env-server.conf /etc/supervisor/conf.d/env-server.conf
 
+# Install cacs-server
+ADD supervisor.cacs-server.conf /etc/supervisor/conf.d/cacs-server.conf
+
 # Install Friso && Robbe
 ADD libfriso.so /usr/lib/libfriso.so
 ADD robbe.so /usr/lib/php5/20121212/robbe.so
