@@ -94,12 +94,12 @@ ADD supervisor.easyrun.conf /etc/supervisor/conf.d/easyrun.conf
 
 # Add all git repos
 ADD git /git
-ADD init-services.sh /tmp/init-services.sh
+ADD scripts /tmp/scripts
 
 # Install node-lims2
 RUN apt-get install -y nodejs beanstalkd build-essential
 ADD supervisor.node-lims2.conf /etc/supervisor/conf.d/node-lims2.conf
-RUN sudo -u genee -i /tmp/init-services.sh node-lims2
+RUN sudo -u genee -i /tmp/scripts/init-node-lims2.sh
 
 # Install zeromq
 RUN apt-get install -y build-essential php-pear php5-dev
@@ -110,26 +110,27 @@ RUN apt-get install -y libzmq3-dev libpgm-dev pkg-config
 
 # Install glogon-server
 ADD supervisor.glogon-server.conf /etc/supervisor/conf.d/glogon-server.conf
-RUN sudo -u genee -i /tmp/init-services.sh glogon-server
+RUN sudo -u genee -i /tmp/scripts/init-glogon-server.sh
 
 # Install epc-server
 ADD supervisor.epc-server.conf /etc/supervisor/conf.d/epc-server.conf
-RUN sudo -u genee -i /tmp/init-services.sh epc-server
+RUN sudo -u genee -i /tmp/scripts/init-epc-server.sh
 
 # Install icco-server
 ADD supervisor.icco-server.conf /etc/supervisor/conf.d/icco-server.conf
-RUN sudo -u genee -i /tmp/init-services.sh icco-server
+RUN sudo -u genee -i /tmp/scripts/init-icco-server.sh
 
 # Install env-server
 ADD supervisor.env-server.conf /etc/supervisor/conf.d/env-server.conf
-RUN sudo -u genee -i /tmp/init-services.sh env-server
+RUN sudo -u genee -i /tmp/scripts/init-env-server.sh
 
 # Install cacs-server
 ADD supervisor.cacs-server.conf /etc/supervisor/conf.d/cacs-server.conf
-RUN sudo -u genee -i /tmp/init-services.sh cacs-server
+RUN sudo -u genee -i /tmp/scripts/init-cacs-server.sh
 
 # Remove git repos
 RUN rm -rf /git
+RUN rm -rf /tmp/scripts
 
 # Install Friso && Robbe
 ADD libfriso.so /usr/lib/libfriso.so
