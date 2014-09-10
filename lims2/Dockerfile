@@ -100,6 +100,8 @@ ADD scripts /tmp/scripts
 RUN apt-get install -y nodejs beanstalkd build-essential
 ADD supervisor.node-lims2.conf /etc/supervisor/conf.d/node-lims2.conf
 RUN sudo -u genee -i /tmp/scripts/init-node-lims2.sh
+RUN mkdir -p /var/log/node-lims2
+RUN chown -R genee:admin /var/log/node-lims2
 
 # Install zeromq
 RUN apt-get install -y build-essential php-pear php5-dev
