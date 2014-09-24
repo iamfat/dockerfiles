@@ -63,8 +63,9 @@ ADD supervisor.nginx.conf /etc/supervisor/conf.d/nginx.conf
 RUN apt-get install -y git
 
 # Install Composer
-RUN mkdir -p /usr/local/bin && php -r "readfile('https://getcomposer.org/installer');" | php && \
-    mv composer.phar /usr/local/bin/composer && \
+RUN apt-get install -y wget
+RUN mkdir -p /usr/local/bin && wget -O /usr/local/bin/composer https://getcomposer.org/composer.phar && \
+    chmod +x /usr/local/bin/composer && \
     echo 'export COMPOSER_HOME="/usr/local/share/composer"' > /etc/profile.d/composer.sh && \
     echo 'export PATH="/usr/local/share/composer/vendor/bin:$PATH"' >> /etc/profile.d/composer.sh
 ENV COMPOSER_PROCESS_TIMEOUT 40000
