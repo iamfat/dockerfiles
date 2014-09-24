@@ -147,6 +147,8 @@ RUN echo "extension=robbe.so" > /etc/php5/mods-available/robbe.ini && \
     echo "robbe.ini_file=/etc/friso/friso.ini" >> /etc/php5/mods-available/robbe.ini && \
     php5enmod robbe
 
+RUN apt-get clean
+
 VOLUME ["/data", "/etc/nginx/sites-enabled", "/var/log/nginx"]
 
 EXPOSE 11300
