@@ -1,6 +1,6 @@
 #!/bin/sh
 
-git clone /git/epc-server.git epc-server
+git clone --branch master /git/epc-server.git epc-server
 cd epc-server
 cnpm install
 
