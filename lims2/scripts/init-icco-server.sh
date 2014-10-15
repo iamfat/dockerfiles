@@ -1,6 +1,6 @@
 #!/bin/sh
 
-git clone /git/icco-server.git icco-server
+git clone --branch master /git/icco-server.git icco-server
 cd icco-server
 cnpm install
 

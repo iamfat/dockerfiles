@@ -1,6 +1,6 @@
 #!/bin/sh
 
-git clone /git/cacs-server.git cacs-server
+git clone --branch master /git/cacs-server.git cacs-server
 cd cacs-server
 cnpm install
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-git clone /git/glogon-server.git glogon-server
+git clone --branch master /git/glogon-server.git glogon-server
 cd glogon-server
 cnpm install
 

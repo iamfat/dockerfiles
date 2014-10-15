@@ -1,6 +1,6 @@
 #!/bin/sh
 
-git clone /git/env-server.git env-server
+git clone --branch master /git/env-server.git env-server
 cd env-server
 cnpm install
 

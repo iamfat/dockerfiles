@@ -1,5 +1,5 @@
 #!/bin/sh
 
-git clone /git/gdoor-server.git gdoor-server
+git clone --branch master /git/gdoor-server.git gdoor-server
 cd gdoor-server
 cnpm install
