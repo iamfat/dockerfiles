@@ -135,6 +135,10 @@ RUN sudo -u genee -i /tmp/scripts/init-cacs-server.sh
 ADD supervisor.gdoor-server.conf /etc/supervisor/conf.d/gdoor-server.conf
 RUN sudo -u genee -i /tmp/scripts/init-gdoor-server.sh
 
+# Install reserv-server
+ADD supervisor.reserv-server.conf /etc/supervisor/conf.d/reserv-server.conf
+RUN sudo -u genee -i /tmp/scripts/init-reserv-server.sh
+
 # Remove git repos
 RUN rm -rf /git
 RUN rm -rf /tmp/scripts
