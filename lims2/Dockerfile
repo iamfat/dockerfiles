@@ -137,6 +137,7 @@ RUN sudo -u genee -i /tmp/scripts/init-gdoor-server.sh
 
 # Install reserv-server
 ADD supervisor.reserv-server.conf /etc/supervisor/conf.d/reserv-server.conf
+RUN mkdir -p /var/log/reserv-lims2 && chown -R genee:admin /var/log/reserv-lims2
 RUN sudo -u genee -i /tmp/scripts/init-reserv-server.sh
 
 # Remove git repos
