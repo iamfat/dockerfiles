@@ -8,6 +8,12 @@ ENV DEBIAN_FRONTEND noninteractive
 # Install Basic Packages
 RUN apt-get update && apt-get install -y language-pack-en bash-completion
 
+# Add PPAs
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository ppa:builds/sphinxsearch-beta
+RUN add-apt-repository ppa:chris-lea/zeromq
+RUN apt-get update
+
 # Install Supervisor
 RUN apt-get install -y supervisor && \
     sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
@@ -86,8 +92,22 @@ ADD supervisor.memcached.conf /etc/supervisor/conf.d/memcached.conf
 RUN apt-get install -y beanstalkd
 ADD supervisor.beanstalkd.conf /etc/supervisor/conf.d/beanstalkd.conf
 
+# Install sphinxsearch
+RUN apt-get install -y sphinxsearch
+ADD sphinx.conf sphinx.conf.sh /etc/sphinxsearch/
+ADD supervisor.sphinxsearch.conf /etc/supervisor/conf.d/sphinxsearch.conf
+
+# Install cron
+RUN apt-get install -y cron
+ADD supervisor.cron.conf /etc/supervisor/conf.d/cron.conf
+
 # Install clamav so that we can scan virus
-RUN apt-get install -y clamav
+RUN apt-get install -y --no-install-recommends clamav clamav-freshclam
+ADD freshclam.conf /etc/clamav/
+RUN freshclam
+
+# Install msmtp
+RUN apt-get install -y msmtp-mta mailutils
 
 # Install easyrun
 RUN npm install -g genee-easyrun
@@ -106,9 +126,6 @@ RUN chown -R genee:admin /var/log/node-lims2
 
 # Install zeromq
 RUN apt-get install -y build-essential php-pear php5-dev
-RUN apt-get install -y software-properties-common
-RUN add-apt-repository ppa:chris-lea/zeromq
-RUN apt-get update
 RUN apt-get install -y libzmq3-dev libpgm-dev pkg-config
 
 # Install glogon-server
@@ -137,6 +154,7 @@ RUN sudo -u genee -i /tmp/scripts/init-gdoor-server.sh
 
 # Install reserv-server
 ADD supervisor.reserv-server.conf /etc/supervisor/conf.d/reserv-server.conf
+RUN mkdir -p /var/log/reserv-lims2 && chown -R genee:admin /var/log/reserv-lims2
 RUN sudo -u genee -i /tmp/scripts/init-reserv-server.sh
 
 # Remove git repos
