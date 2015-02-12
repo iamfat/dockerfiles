@@ -106,6 +106,9 @@ RUN apt-get install -y --no-install-recommends clamav clamav-freshclam
 ADD freshclam.conf /etc/clamav/
 RUN freshclam
 
+# Install msmtp
+RUN apt-get install -y msmtp-mta mailutils
+
 # Install easyrun
 RUN npm install -g genee-easyrun
 ADD supervisor.easyrun.conf /etc/supervisor/conf.d/easyrun.conf
