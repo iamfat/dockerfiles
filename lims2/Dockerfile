@@ -102,7 +102,9 @@ RUN apt-get install -y cron
 ADD supervisor.cron.conf /etc/supervisor/conf.d/cron.conf
 
 # Install clamav so that we can scan virus
-RUN apt-get install -y clamav
+RUN apt-get install -y --no-install-recommends clamav clamav-freshclam
+ADD freshclam.conf /etc/clamav/
+RUN freshclam
 
 # Install easyrun
 RUN npm install -g genee-easyrun
