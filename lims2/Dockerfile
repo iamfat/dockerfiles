@@ -97,6 +97,10 @@ RUN apt-get install -y sphinxsearch
 ADD sphinx.conf sphinx.conf.sh /etc/sphinxsearch/
 ADD supervisor.sphinxsearch.conf /etc/supervisor/conf.d/sphinxsearch.conf
 
+# Install cron
+RUN apt-get install -y cron
+ADD supervisor.cron.conf /etc/supervisor/conf.d/cron.conf
+
 # Install clamav so that we can scan virus
 RUN apt-get install -y clamav
 
