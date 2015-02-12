@@ -1,10 +1,7 @@
 #!/bin/bash
 
-DIR=$(dirname $0)
+set -e
 
-cat $DIR/sphinx.conf
-
-for FILE in `ls $DIR/conf.d/*.conf`
-do
-	cat $FILE
-done
+cd "$(dirname $0)"
+cat sphinx.conf
+[ ! -d conf.d ] || find conf.d -type f -name '*.conf' -execdir cat {} +
