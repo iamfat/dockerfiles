@@ -101,6 +101,10 @@ ADD supervisor.sphinxsearch.conf /etc/supervisor/conf.d/sphinxsearch.conf
 RUN apt-get install -y cron
 ADD supervisor.cron.conf /etc/supervisor/conf.d/cron.conf
 
+# Install redis
+RUN apt-get install -y redis-server
+ADD supervisor.redis.conf /etc/supervisor/conf.d/redis.conf
+
 # Install clamav so that we can scan virus
 RUN apt-get install -y --no-install-recommends clamav clamav-freshclam
 ADD freshclam.conf /etc/clamav/
